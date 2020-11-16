@@ -19,6 +19,9 @@ import time
 
 N_IMGS = 10
 
+# Différentes couleurs possibles : Hors cercle, Dans cercle, Non généré
+COLORS_BIN = [bytearray(c) for c in [[255, 255, 0], [255, 0, 0], [255, 255, 255]]]
+
 def is_pi_text_pixel(x, y, side, pi):
     """Renvoie un booléen déterminant si le pixel de coordonnées (x, y)
     est un pixel nécessaire à l'écriture du nombre pi sur l'image
@@ -27,18 +30,20 @@ def is_pi_text_pixel(x, y, side, pi):
 
     return False
 
-def generate_ppm_file(ind, name, side, pts, approx):
+def generate_ppm_file_ascii(ind, name, side, pts, approx):
     """Génère une image de nom name au format ppm avec les
-    points contenus dans pts
+    points contenus dans pts (Version ASCII, lisible mais plus lourde)
 
     ECRITURE DU NOMBRE PI A RAJOUTER
     """
     t1 = time.perf_counter()
+
     # Différentes couleurs possibles : Hors cercle, Dans cercle, Non généré
+    # A noté qu'elles sont au préalable codées en binaire pour un "for" plus rapide
     cols = ["1 1 0", "1 0 0", "1 1 1"]
 
     with open(name, "w") as f:
-        # En-tête du PPM : P3 pour PPM, Taille image puis max des valeurs RGB
+        # En-tête du PPM : P3 pour PPM, Taille image
         f.write(f"P3\n{side} {side}\n")
 
         # Génération des points de l'image
@@ -47,6 +52,26 @@ def generate_ppm_file(ind, name, side, pts, approx):
                 # Couleur du point en fonction du type
                 f.write(cols[pts[pt_y][pt_x]])
                 f.write("\n")
+
+def generate_ppm_file(name, pts):
+    """Génère une image de nom name au format ppm avec les
+    points contenus dans pts (Version binaire, illisble mais legère !)
+
+    ECRITURE DU NOMBRE PI A RAJOUTER
+    """
+    t1 = time.perf_counter()
+    side = len(pts)
+
+    with open(name, "wb") as f:
+        # En-tête du PPM : P6 pour PPM binaire, Taille image
+        f.write(bytes(f"P6\n{side} {side}\n", "UTF-8"))
+
+        # Génération des points de l'image
+        for pt_y in range(side):
+            for pt_x in range(side):
+                # Couleur du point en fonction du type
+                f.write(COLORS_BIN[pts[pt_y][pt_x]])
+                #f.write("\n")
 
     print("\tGenerate ppm file dt=" + str(time.perf_counter() - t1))
 
@@ -73,9 +98,7 @@ if __name__ == "__main__":
 
         # Génération (nom et) fichier
         pi_current_approx = "{}-{}".format(*str(approx).split("."))
-        generate_ppm_file(i,
-            f"img{i}_{pi_current_approx}.ppm",
-            side, pts, approx)
+        generate_ppm_file(f"img{i}_{pi_current_approx}.ppm", pts)
 
         print(f"Loop time i={i}, dt={time.perf_counter() - t1}")
 
