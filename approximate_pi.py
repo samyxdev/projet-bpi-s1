@@ -30,29 +30,6 @@ def is_pi_text_pixel(x, y, side, pi):
 
     return False
 
-def generate_ppm_file_ascii(ind, name, side, pts, approx):
-    """Génère une image de nom name au format ppm avec les
-    points contenus dans pts (Version ASCII, lisible mais plus lourde)
-
-    ECRITURE DU NOMBRE PI A RAJOUTER
-    """
-    t1 = time.perf_counter()
-
-    # Différentes couleurs possibles : Hors cercle, Dans cercle, Non généré
-    # A noté qu'elles sont au préalable codées en binaire pour un "for" plus rapide
-    cols = ["1 1 0", "1 0 0", "1 1 1"]
-
-    with open(name, "w") as f:
-        # En-tête du PPM : P3 pour PPM, Taille image
-        f.write(f"P3\n{side} {side}\n")
-
-        # Génération des points de l'image
-        for pt_y in range(side):
-            for pt_x in range(side):
-                # Couleur du point en fonction du type
-                f.write(cols[pts[pt_y][pt_x]])
-                f.write("\n")
-
 def generate_ppm_file(name, pts):
     """Génère une image de nom name au format ppm avec les
     points contenus dans pts (Version binaire, illisble mais legère !)
