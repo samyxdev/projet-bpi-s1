@@ -20,7 +20,7 @@ import time
 N_IMGS = 10
 
 # Différentes couleurs possibles : Hors cercle, Dans cercle, Non généré
-COLORS_BIN = [bytearray(c) for c in [[255, 255, 0], [255, 0, 0], [255, 255, 255]]]
+COLORS_BIN = [bytearray(c) for c in [[0, 0, 255], [255, 0, 0], [255, 255, 255]]]
 
 def is_pi_text_pixel(x, y, side, pi):
     """Renvoie un booléen déterminant si le pixel de coordonnées (x, y)
@@ -64,14 +64,13 @@ def generate_ppm_file(name, pts):
 
     with open(name, "wb") as f:
         # En-tête du PPM : P6 pour PPM binaire, Taille image
-        f.write(bytes(f"P6\n{side} {side}\n", "UTF-8"))
+        f.write(bytes(f"P6 {side} {side} 255 ", encoding='utf8'))
 
         # Génération des points de l'image
         for pt_y in range(side):
             for pt_x in range(side):
                 # Couleur du point en fonction du type
                 f.write(COLORS_BIN[pts[pt_y][pt_x]])
-                #f.write("\n")
 
     print("\tGenerate ppm file dt=" + str(time.perf_counter() - t1))
 
