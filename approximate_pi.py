@@ -22,24 +22,24 @@ N_IMGS = 10
 # Différentes couleurs possibles : Hors cercle, Dans cercle, Non généré
 COLORS_BIN = [bytearray(c) for c in [[0, 0, 255], [255, 0, 0], [255, 255, 255]]]
 
-def is_pi_text_pixel(x, y, side, pi):
-    """Renvoie un booléen déterminant si le pixel de coordonnées (x, y)
-    est un pixel nécessaire à l'écriture du nombre pi sur l'image
-    """
-    #print("is_pi_text_pixel NON REDIGEE")
-
-    return False
-
-def generate_ppm_file(name, pts):
-    """Génère une image de nom name au format ppm avec les
+def generate_ppm_file(pts, size, approx, ind):
+    """Génère une image de nom spécifié ci-dessous au format ppm avec les
     points contenus dans pts (Version binaire, illisble mais legère !)
 
-    ECRITURE DU NOMBRE PI A RAJOUTER
+    Arguments:
+    pts: Liste des points de l'image
+    size: taille côté de l'image (pour placement texte)
+    approx: approximation actuelle de pi
+    ind: index de l'image (pour le nom)
     """
     t1 = time.perf_counter()
     side = len(pts)
 
-    with open(name, "wb") as f:
+    # Formattage du nom de l'image
+    approx_name = "{}-{}".format(*str(approx).split("."))
+    name = f"img{ind}_{approx_name}.ppm"
+
+    with open(name + "tmp", "wb") as f:
         # En-tête du PPM : P6 pour PPM binaire, Taille image
         f.write(bytes(f"P6 {side} {side} 255 ", encoding='utf8'))
 
@@ -48,6 +48,11 @@ def generate_ppm_file(name, pts):
             for pt_x in range(side):
                 # Couleur du point en fonction du type
                 f.write(COLORS_BIN[pts[pt_y][pt_x]])
+
+    # Ajouter l'approximation de pi à l'image au centre en noir
+    pos_ctr = size // 2
+    subprocess.run(f"cat {name}tmp | ppmlabel -x {pos_ctr} -y {pos_ctr} -color black -text \"{approx}\" > {name}")
+    subprocess.run(f"rm *.ppmtmp")
 
     print("\tGenerate ppm file dt=" + str(time.perf_counter() - t1))
 
@@ -73,13 +78,15 @@ if __name__ == "__main__":
         approx = simu.monte_carlo_extended(pts, side, pts_per_img)
 
         # Génération (nom et) fichier
-        pi_current_approx = "{}-{}".format(*str(approx).split("."))
-        generate_ppm_file(f"img{i}_{pi_current_approx}.ppm", pts)
+        generate_ppm_file(pts, side, approx, i)
 
         print(f"Loop time i={i}, dt={time.perf_counter() - t1}")
 
-    print(f"Fin de la génération en {time.perf_counter() - t_init} s")
+    tf_gen = time.perf_counter()
+    print(f"Fin de la génération en {tf_gen - t_init} s")
 
-    # Convertir en GIF
+    # Convertir en GIF en ajoutant les approximations de pi à chaque frame
     cmd = f"convert -delay 4 -loop 1 *.ppm pi_{nb_pts}_{side}.gif"
     #subprocess.call(cmd.split())
+
+    print(f"Fin de la conversion en Gif en {time.perf_counter() - tf_gen}s")
