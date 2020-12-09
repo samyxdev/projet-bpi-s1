@@ -17,7 +17,7 @@ import subprocess
 import time
 import simulator as simu
 
-from debug import *
+from debug import printd
 
 N_IMGS = 10
 

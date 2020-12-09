@@ -6,7 +6,7 @@ import sys
 import random as rd
 import time
 
-from debug import *
+from debug import printd
 
 def monte_carlo(n_pts):
     """Méthode de Monte-Carlo sur n_pts points retournant une
