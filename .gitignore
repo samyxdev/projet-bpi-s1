@@ -1,3 +1,4 @@
 .pylintrc
 __*
 *.ppm
+*.gif
