@@ -3,7 +3,7 @@
 debug et de pouvoir très rapidement les désactiver
 """
 
-DEBUG = True
+DEBUG = False
 
 def printd(debug_str):
     """Fonction affichant du texte de debug si la
