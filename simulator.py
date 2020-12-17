@@ -33,7 +33,7 @@ def monte_carlo_extended(pts, side, n_pts):
 
     # Calculs effectués en amont pour accélerer les itérations du for
     radius = side // 2
-    radius_sq = radius**2
+    radius_sqrd = radius**2
 
     # Compteur de pixels réecrits
     deb_rewrite = 0
@@ -44,7 +44,7 @@ def monte_carlo_extended(pts, side, n_pts):
 
         # Si ce point n'a pas encore été généré, on vérifie l'appartenance au cercle
         if pts[ptx][pty] == 2:
-            pts[ptx][pty] = int(((ptx - radius + 1)**2 + (pty - radius + 1)**2) <= radius_sq)
+            pts[ptx][pty] = int(((ptx - radius)**2 + (pty - radius)**2) <= radius_sqrd)
 
         # Sinon, on a pas besoin d'y toucher
         else:
