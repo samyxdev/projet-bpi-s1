@@ -4,11 +4,8 @@
 simulation de Monte-Carlo avec l'estimation de pi au centre et
 une image animée gif de la succession des images ppm
 
+Stats d'occupation en mémoire
 /usr/bin/time -v ./approximate_pi.py 800 1000000 5
-
-TODO:
-- Centrer parfaitement le texte quelque soit la taille de l'approximation
-- Corriger l'approximation degeue
 
 """
 
@@ -41,9 +38,9 @@ def generate_ppm_file(pts_list, approx_value, ind):
     approx_name = "{}-{}".format(*str(approx_value).split("."))
     name = f"img{ind}_{approx_name}.ppm"
 
+    # Pour que la position du texte soit bien adaptée à la taille de l'image
     pos_ctr = side // 2
-
-    proc = subprocess.Popen(f"ppmlabel -x {pos_ctr - 120} -y {pos_ctr + 15} " + \
+    proc = subprocess.Popen(f"ppmlabel -x {pos_ctr - 150} -y {pos_ctr + 15} " + \
         f"-color \"black\" -size 50 -text {approx_value} > {name}",
     shell=True, stdin=subprocess.PIPE)
 
@@ -55,6 +52,7 @@ def generate_ppm_file(pts_list, approx_value, ind):
             # Couleur du point en fonction du type
             proc.stdin.write(COLORS_BIN[pts_list[pt_y][pt_x]])
 
+    # "Vide" le tampon d'entrée standard qu'on a rempli avec l'image
     proc.stdin.flush()
 
     printd("\tGenerate ppm file dt=" + str(time.perf_counter() - ti_generate))
